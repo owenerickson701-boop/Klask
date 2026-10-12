@@ -1,4 +1,4 @@
-// Basic demo for readings from Adafruit BNO08x
+// Code for reading inputs from the joystick and sending to the other board
 #include <Arduino.h>
 #include <Adafruit_BNO08x.h>
 
