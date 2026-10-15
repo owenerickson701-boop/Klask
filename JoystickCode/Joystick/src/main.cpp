@@ -7,6 +7,9 @@ int pinD1 = 1;
 Adafruit_BNO08x bno08x(BNO08X_RESET);
 sh2_SensorValue_t sensorValue;
 
+int xSpeed;
+int ySpeed;
+
 void setReports();
 
 void setup(void)
@@ -47,6 +50,9 @@ void loop()
   Serial.print(alpha);
   Serial.print("   ");
   Serial.println(beta);
+
+  xSpeed = alpha;
+  ySpeed = beta;
 }
 
 void setReports(void)
