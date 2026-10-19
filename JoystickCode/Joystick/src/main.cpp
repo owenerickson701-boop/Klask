@@ -15,8 +15,8 @@ AccelStepper stepper1(1, pinStep, pinDir);
 Adafruit_BNO08x bno08x(BNO08X_RESET);
 sh2_SensorValue_t sensorValue;
 
-int k = 2;            // Tuning. Speed multiplier.
-int stepPerIter = 20; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
+int k = 20;            // Tuning. Speed multiplier.
+int stepPerIter = 200; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
 
 void setReports();
 
@@ -32,7 +32,7 @@ void setup(void)
   }
   Serial.println("BNO08x Found!");
   setReports();
-  stepper1.setAcceleration(100000);
+  stepper1.setAcceleration(10000);
   stepper1.setSpeed(1000);
   stepper1.setMaxSpeed(1000);
 }
@@ -58,29 +58,14 @@ void loop()
   float alpha = degrees(atan2(x, sqrt(y * y + z * z)));
   float beta = degrees(atan2(y, x));
 
-  if (alpha > 90) // cap values
-  {
-    alpha = 90;
-  };
-  if (alpha < -90)
-  {
-    alpha = -90;
-  };
-  if (beta > 90)
-  {
-    beta = 90;
-  };
-  if (beta < -90)
-  {
-    beta = -90;
-  };
-
   Serial.print(alpha);
   Serial.print("   ");
   Serial.println(beta);
 
   xSpeed = alpha * k;
   ySpeed = beta * k;
+
+  Serial.println(xSpeed);
 
   stepper1.setSpeed(xSpeed);
   for (int i = 0; i < stepPerIter; i++)
