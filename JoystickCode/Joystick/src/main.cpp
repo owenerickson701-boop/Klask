@@ -10,6 +10,8 @@ int pinDir = 10;
 int xSpeed;
 int ySpeed;
 
+bool buttonPressed = false; // dummy input
+
 AccelStepper stepper1(1, pinStep, pinDir);
 
 Adafruit_BNO08x bno08x(BNO08X_RESET);
@@ -67,6 +69,13 @@ void loop()
   for (int i = 0; i < stepPerIter; i++)
   {
     stepper1.run();
+  }
+
+  if (buttonPressed)
+  {
+    stepper1.setCurrentPosition(0);
+    stepper1.setSpeed(stepper1.maxSpeed());
+    stepper1.runToNewPosition(100); // Move forward 100 steps at MAX SPEED
   }
 }
 
