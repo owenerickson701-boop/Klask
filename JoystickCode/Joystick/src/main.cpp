@@ -7,6 +7,10 @@
 
 int pinStep = 9;
 int pinDir = 10;
+
+int Rx1 = 5;
+int Tx1 = 4;
+
 int xSpeed;
 int ySpeed;
 
@@ -37,6 +41,8 @@ void setup(void)
   stepper1.setAcceleration(10000);
   stepper1.setSpeed(1500);
   stepper1.setMaxSpeed(1500);
+  pinMode(Tx1, OUTPUT);
+  pinMode(Rx1, INPUT);
 }
 
 void loop()
@@ -53,14 +59,16 @@ void loop()
     return;
   }
 
-  float alpha = sensorValue.un.gyroscope.x;
-  float beta = sensorValue.un.gyroscope.y;
+  float alpha = 255 * sensorValue.un.gyroscope.x;
+  float beta = 255 * sensorValue.un.gyroscope.y;
 
   Serial.print(alpha);
   Serial.print("   ");
   Serial.println(beta);
 
-  xSpeed = alpha * k;
+  analogWrite(Tx1, alpha);
+
+  xSpeed = analogRead(Rx1) * k;
   ySpeed = beta * k;
 
   Serial.println(xSpeed);
