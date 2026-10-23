@@ -42,6 +42,7 @@ void loop()
   ySpeed = Serial2.parseInt();
   Serial.println(ySpeed);
 }
+
 /*
 void writePin(int xSpeed)
 {

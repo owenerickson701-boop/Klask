@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include <math.h>
 #include <Adafruit_BNO08x.h>
-#include <AccelStepper.h>
+
+// MAIN file. Read accel, calculate speed, send to second board.
 
 #define BNO08X_RESET -1
 
@@ -14,9 +15,8 @@ int Tx1 = 4;
 int xSpeed;
 int ySpeed;
 
-bool buttonPressed = false; // dummy input
-
-AccelStepper stepper1(1, pinStep, pinDir);
+bool buttonPressed = false;      // dummy input
+bool otherButtonPressed = false; // dummy input
 
 Adafruit_BNO08x bno08x(BNO08X_RESET);
 sh2_SensorValue_t sensorValue;
@@ -26,34 +26,49 @@ int stepPerIter = 200; // Maximum steps per poll of the BNO bc each call of run(
 
 void setReports();
 
+#include <Arduino.h>
+int Rx1 = 15; // A0
+int Tx1 = 16; // A1
+
+int Rx2 = 17; // A2
+int Tx2 = 18; // A3
+
+long rateToPc = 115200;
+long rateToBoard = 9600;
+
 void setup(void)
 {
-  Serial.begin(115200);
+
+  Serial.begin(rateToPc);
   while (!Serial)
     delay(10); // will pause Zero, Leonardo, etc until serial console opens
+
+  pinMode(Rx1, INPUT);
+  pinMode(Tx1, OUTPUT);
+  pinMode(Rx2, INPUT);
+  pinMode(Tx2, OUTPUT);
+
+  Serial1.setPins(Rx1, Tx1);
+  Serial1.begin(rateToBoard);
+  Serial2.setPins(Rx2, Tx2);
+  Serial2.begin(rateToBoard);
 
   if (!bno08x.begin_I2C())
   {
     Serial.println("Failed to find BNO08x chip");
   }
+
   Serial.println("BNO08x Found!");
   setReports();
-  stepper1.setAcceleration(10000);
-  stepper1.setSpeed(1500);
-  stepper1.setMaxSpeed(1500);
-  pinMode(Tx1, OUTPUT);
-  pinMode(Rx1, INPUT);
 }
 
 void loop()
 {
-
   if (bno08x.wasReset())
   {
     Serial.println("sensor was reset ");
     setReports();
   }
-
   if (!bno08x.getSensorEvent(&sensorValue))
   {
     return;
@@ -66,25 +81,20 @@ void loop()
   Serial.print("   ");
   Serial.println(beta);
 
-  analogWrite(Tx1, alpha);
-
   xSpeed = analogRead(Rx1) * k;
   ySpeed = beta * k;
 
   Serial.println(xSpeed);
 
-  stepper1.setSpeed(xSpeed);
-  for (int i = 0; i < stepPerIter; i++)
+  if (buttonPressed) // Macro 1
   {
-    stepper1.run();
+  }
+  else if (otherButtonPressed) // Macro 2
+  {
   }
 
-  if (buttonPressed)
-  {
-    stepper1.setCurrentPosition(0);
-    stepper1.setSpeed(stepper1.maxSpeed());
-    stepper1.runToNewPosition(100); // Move forward 100 steps at MAX SPEED
-  }
+  Serial1.println(xSpeed);
+  Serial2.println(ySpeed);
 }
 
 void setReports(void)
