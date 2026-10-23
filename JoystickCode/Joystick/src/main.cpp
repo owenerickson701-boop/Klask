@@ -81,9 +81,6 @@ void loop()
   Serial.print("   ");
   Serial.println(beta);
 
-  xSpeed = analogRead(Rx1) * k;
-  ySpeed = beta * k;
-
   Serial.println(xSpeed);
 
   if (buttonPressed) // Macro 1
@@ -91,6 +88,11 @@ void loop()
   }
   else if (otherButtonPressed) // Macro 2
   {
+  }
+  else
+  {
+    xSpeed = (alpha + beta) * k;
+    ySpeed = (alpha - beta) * k;
   }
 
   Serial1.println(xSpeed);

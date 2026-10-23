@@ -2,7 +2,7 @@
 #include <math.h>
 #include <AccelStepper.h>
 
-// MAIN file. Read accel, calculate speed, send to second board.
+// Seconday code. Read speeds, run motors. It's a simple life.
 
 int pinStep = 9;
 int pinDir = 10;
@@ -15,7 +15,7 @@ int Tx1 = 16; // A1
 int Rx2 = 17; // A2
 int Tx2 = 18; // A3
 
-int xSpeed;
+int xSpeed; // NOT ACTUALLY X AND Y
 int ySpeed;
 
 bool buttonPressed = false;      // dummy input
