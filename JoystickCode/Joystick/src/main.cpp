@@ -11,8 +11,8 @@ int Tx1 = 16; // A1
 int Rx2 = 17; // A2
 int Tx2 = 18; // A3
 
-int xSpeed;
-int ySpeed;
+int xSpeed = 0;
+int ySpeed = 0;
 
 bool buttonPressed = false;      // dummy input
 bool otherButtonPressed = false; // dummy input
@@ -23,8 +23,7 @@ long rateToBoard = 9600;
 Adafruit_BNO08x bno08x(BNO08X_RESET);
 sh2_SensorValue_t sensorValue;
 
-int k = 2500;          // Tuning. Speed multiplier.
-int stepPerIter = 200; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
+int k = 1; // Tuning. Speed multiplier.
 
 void setReports();
 
@@ -34,6 +33,8 @@ void setup(void)
   Serial.begin(rateToPc);
   while (!Serial)
     delay(10); // will pause Zero, Leonardo, etc until serial console opens
+
+  Serial.print("IM ALIVE");
 
   pinMode(Rx1, INPUT);
   pinMode(Tx1, OUTPUT);
@@ -56,6 +57,7 @@ void setup(void)
 
 void loop()
 {
+
   if (bno08x.wasReset())
   {
     Serial.println("sensor was reset ");
@@ -66,16 +68,8 @@ void loop()
     return;
   }
 
-  float alpha = 255 * sensorValue.un.gyroscope.x;
-  float beta = 255 * sensorValue.un.gyroscope.y;
-
-  Serial.print(alpha);
-  Serial.print("   ");
-  Serial.println(beta);
-  Serial.print("Echo:");
-
-  Serial.print(Serial1.parseInt());
-  Serial.println(Serial2.parseInt());
+  int alpha = 255 * sensorValue.un.gyroscope.x;
+  int beta = 255 * sensorValue.un.gyroscope.y;
 
   if (buttonPressed) // Macro 1
   {
@@ -89,14 +83,19 @@ void loop()
     ySpeed = (alpha - beta) * k;
   }
 
-  Serial1.println(xSpeed);
+  Serial1.println(xSpeed); // send speeds
   Serial2.println(ySpeed);
+
+  Serial.print("Echo: ");
+
+  Serial.print(Serial1.parseInt());
+  Serial.println(Serial2.parseInt());
 }
 
 void setReports(void)
 {
   Serial.println("Setting desired reports");
-  if (!bno08x.enableReport(SH2_GYRO_INTEGRATED_RV))
+  if (!bno08x.enableReport(SH2_GYROSCOPE_UNCALIBRATED))
   {
     Serial.println("Could not enable accelerometer");
   }

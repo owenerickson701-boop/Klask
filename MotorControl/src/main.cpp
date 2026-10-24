@@ -2,7 +2,7 @@
 #include <math.h>
 #include <AccelStepper.h>
 
-// Seconday code. Read speeds, run motors. It's a simple life.
+// Secondary code. Read speeds, run motors. It's a simple life.
 
 int pinStep = 9;
 int pinDir = 10;
@@ -23,14 +23,17 @@ bool otherButtonPressed = false; // also dummy input
 AccelStepper stepper1(1, pinStep, pinDir);
 AccelStepper stepper2(1, pinStep2, pinDir2);
 
-int k = 2500;          // Tuning. Speed multiplier.
-int stepPerIter = 200; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
+int stepPerIter = 1; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
 
-long rateToPc = 115200;
 long rateToBoard = 9600;
 
 void setup(void)
 {
+  pinMode(Rx1, INPUT);
+  pinMode(Tx1, OUTPUT);
+  pinMode(Rx2, INPUT);
+  pinMode(Tx2, OUTPUT);
+
   Serial1.setPins(Rx1, Tx1);
   Serial1.begin(rateToBoard);
   Serial2.setPins(Rx2, Tx2);
@@ -42,22 +45,18 @@ void setup(void)
   stepper2.setAcceleration(10000);
   stepper2.setSpeed(1500);
   stepper2.setMaxSpeed(1500);
-  pinMode(Tx1, OUTPUT);
-  pinMode(Rx1, INPUT);
-  pinMode(Tx2, OUTPUT);
-  pinMode(Rx2, INPUT);
 }
 
 void loop()
 {
-  xSpeed = Serial1.parseInt();
+  xSpeed = Serial1.parseInt(); // get values
   ySpeed = Serial2.parseInt();
 
   Serial1.println(xSpeed); // echo
   Serial2.println(ySpeed);
 
-  stepper1.setSpeed(xSpeed);
-  stepper2.setSpeed(ySpeed);
+  stepper1.setSpeed((float)(xSpeed)); // Run motors
+  stepper2.setSpeed((float)(ySpeed));
   for (int i = 0; i < stepPerIter; i++)
   {
     stepper1.run();

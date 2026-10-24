@@ -32,7 +32,6 @@ void setup(void)
 
   Serial1.setPins(Rx1, Tx1);
   Serial1.begin(rateToBoard);
-
   Serial2.setPins(Rx2, Tx2);
   Serial2.begin(rateToBoard);
 }
