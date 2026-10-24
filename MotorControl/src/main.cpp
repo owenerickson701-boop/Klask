@@ -11,7 +11,6 @@ int pinDir2 = 12;
 
 int Rx1 = 15; // A0
 int Tx1 = 16; // A1
-
 int Rx2 = 17; // A2
 int Tx2 = 18; // A3
 
@@ -27,14 +26,8 @@ AccelStepper stepper2(1, pinStep2, pinDir2);
 int k = 2500;          // Tuning. Speed multiplier.
 int stepPerIter = 200; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
 
-int Rx = 15; // A0
-int Tx = 16; // A1
-
 long rateToPc = 115200;
 long rateToBoard = 9600;
-
-int xSpeed;
-int ySpeed;
 
 void setup(void)
 {
@@ -49,14 +42,19 @@ void setup(void)
   stepper2.setAcceleration(10000);
   stepper2.setSpeed(1500);
   stepper2.setMaxSpeed(1500);
-  pinMode(Tx, OUTPUT);
-  pinMode(Rx, INPUT);
+  pinMode(Tx1, OUTPUT);
+  pinMode(Rx1, INPUT);
+  pinMode(Tx2, OUTPUT);
+  pinMode(Rx2, INPUT);
 }
 
 void loop()
 {
   xSpeed = Serial1.parseInt();
   ySpeed = Serial2.parseInt();
+
+  Serial1.println(xSpeed); // echo
+  Serial2.println(ySpeed);
 
   stepper1.setSpeed(xSpeed);
   stepper2.setSpeed(ySpeed);

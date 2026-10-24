@@ -6,17 +6,19 @@
 
 #define BNO08X_RESET -1
 
-int pinStep = 9;
-int pinDir = 10;
-
-int Rx1 = 5;
-int Tx1 = 4;
+int Rx1 = 15; // A0
+int Tx1 = 16; // A1
+int Rx2 = 17; // A2
+int Tx2 = 18; // A3
 
 int xSpeed;
 int ySpeed;
 
 bool buttonPressed = false;      // dummy input
 bool otherButtonPressed = false; // dummy input
+
+long rateToPc = 115200;
+long rateToBoard = 9600;
 
 Adafruit_BNO08x bno08x(BNO08X_RESET);
 sh2_SensorValue_t sensorValue;
@@ -25,16 +27,6 @@ int k = 2500;          // Tuning. Speed multiplier.
 int stepPerIter = 200; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
 
 void setReports();
-
-#include <Arduino.h>
-int Rx1 = 15; // A0
-int Tx1 = 16; // A1
-
-int Rx2 = 17; // A2
-int Tx2 = 18; // A3
-
-long rateToPc = 115200;
-long rateToBoard = 9600;
 
 void setup(void)
 {
@@ -80,8 +72,10 @@ void loop()
   Serial.print(alpha);
   Serial.print("   ");
   Serial.println(beta);
+  Serial.print("Echo:");
 
-  Serial.println(xSpeed);
+  Serial.print(Serial1.parseInt());
+  Serial.println(Serial2.parseInt());
 
   if (buttonPressed) // Macro 1
   {

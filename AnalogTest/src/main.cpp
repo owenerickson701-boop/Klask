@@ -1,9 +1,11 @@
 #include <Arduino.h>
+
 int Rx1 = 15; // A0
 int Tx1 = 16; // A1
-
 int Rx2 = 17; // A2
 int Tx2 = 18; // A3
+
+int dOut = 6;
 
 long rateToPc = 115200;
 long rateToBoard = 9600;
@@ -11,12 +13,17 @@ long rateToBoard = 9600;
 int xSpeed;
 int ySpeed;
 
+bool mainBoard = 0; // TRUE for whichever board is connected to laptop
+
 void setup(void)
 {
 
-  Serial.begin(rateToPc);
-  while (!Serial)
-    delay(10); // will pause Zero, Leonardo, etc until serial console opens
+  if (mainBoard)
+  {
+    Serial.begin(rateToPc);
+    while (!Serial)
+      delay(10);
+  }
 
   pinMode(Rx1, INPUT);
   pinMode(Tx1, OUTPUT);
@@ -33,14 +40,30 @@ void setup(void)
 void loop()
 {
 
-  xSpeed = millis() % 255;
-  Serial.print(xSpeed);
-  Serial.print("     ");
-  Serial1.print(xSpeed);
+  if (mainBoard)
+  {
 
-  delay(10);
-  ySpeed = Serial2.parseInt();
-  Serial.println(ySpeed);
+    xSpeed = millis() % 255;
+    ySpeed = millis() % 255;
+    Serial.print(xSpeed);
+    Serial.print("     ");
+    Serial.println(ySpeed);
+    Serial1.print(xSpeed);
+    Serial2.print(ySpeed);
+
+    delay(10);
+    Serial.print(Serial1.parseInt());
+    Serial.print("     ");
+    Serial.println(Serial2.parseInt());
+  }
+
+  else
+  { // read and echo
+    ySpeed = Serial2.parseInt();
+    xSpeed = Serial1.parseInt();
+    Serial1.print(xSpeed);
+    Serial2.print(ySpeed);
+  }
 }
 
 /*
