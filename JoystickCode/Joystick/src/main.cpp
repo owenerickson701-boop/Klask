@@ -71,15 +71,19 @@ void loop()
   int alpha = 255 * sensorValue.un.gyroscope.x;
   int beta = 255 * sensorValue.un.gyroscope.y;
 
-  if (buttonPressed) // Macro 1
+  if (buttonPressed) // Macro 1: FULL SPEED AHEAD
   {
+    xSpeed = 1000;
+    ySpeed = -1000;
   }
-  else if (otherButtonPressed) // Macro 2
+  else if (otherButtonPressed) // Brakes/Estop
   {
+    xSpeed = 0;
+    ySpeed = 0;
   }
   else
   {
-    xSpeed = (alpha + beta) * k;
+    xSpeed = (alpha + beta) * k; // Math this out later
     ySpeed = (alpha - beta) * k;
   }
 
