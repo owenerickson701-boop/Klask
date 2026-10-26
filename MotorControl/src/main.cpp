@@ -52,14 +52,17 @@ void loop()
   if (Serial1.available() || Serial2.available())
   {
     if (Serial1.available())
-      xSpeed = (Serial1.readStringUntil('\n')).toInt(); // get values
+      xSpeed = Serial1.parseInt(); // get values
 
     if (Serial2.available())
-      ySpeed = (Serial2.readStringUntil('\n')).toInt(); // Serial1.parseInt());
+      ySpeed = Serial2.parseInt(); // Serial1.parseInt());
 
     stepper1.setSpeed((float)(xSpeed)); // Run motors
     stepper2.setSpeed((float)(ySpeed));
-    Serial1.println("Received");
+    Serial1.print("Received ");
+    Serial1.print(xSpeed);
+    Serial1.print(", ");
+    Serial1.println(ySpeed);
   }
   stepper1.runSpeed();
   stepper2.runSpeed();
