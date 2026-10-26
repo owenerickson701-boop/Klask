@@ -61,6 +61,6 @@ void loop()
     stepper2.setSpeed((float)(ySpeed));
     Serial1.println("Received");
   }
-  stepper1.run();
-  stepper2.run();
+  stepper1.runSpeed();
+  stepper2.runSpeed();
 }

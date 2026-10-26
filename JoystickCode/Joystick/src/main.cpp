@@ -56,8 +56,8 @@ void quaternionToEulerRV(sh2_RotationVectorWAcc_t *rotational_vector, euler_t *y
   quaternionToEuler(rotational_vector->real, rotational_vector->i, rotational_vector->j, rotational_vector->k, ypr, degrees);
 }
 
-int k = 40;           // Tuning. Speed multiplier.
-int stepsToAvg = 500; // Cancel out the IMU being a @$#&^%# at rest
+int k = 10;          // Tuning. Speed multiplier.
+int stepsToAvg = 10; // Cancel out the IMU being a @$#&^%# at rest
 
 void setReports();
 
@@ -91,15 +91,10 @@ void setup(void)
 
 void loop()
 {
-
   if (bno08x.wasReset())
   {
     Serial.println("sensor was reset ");
     setReports();
-  }
-  if (!bno08x.getSensorEvent(&sensorValue))
-  {
-    return;
   }
 
   float alphas = 0; // sum of alphas
@@ -107,6 +102,10 @@ void loop()
 
   for (int i = 0; i < stepsToAvg; i++)
   {
+    while (!bno08x.getSensorEvent(&sensorValue))
+    {
+      delay(1); // wait for event
+    }
     quaternionToEulerRV(&sensorValue.un.arvrStabilizedRV, &ypr, true);
     alphas += ypr.roll;
     betas += ypr.pitch;
