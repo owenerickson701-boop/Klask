@@ -45,6 +45,10 @@ void setup(void)
   stepper2.setAcceleration(10000);
   stepper2.setSpeed(1500);
   stepper2.setMaxSpeed(1500);
+  pinMode(pinStep, OUTPUT);
+  pinMode(pinDir, OUTPUT);
+  pinMode(pinDir2, OUTPUT);
+  pinMode(pinStep2, OUTPUT);
 }
 
 void loop()
@@ -57,10 +61,10 @@ void loop()
       stepper1.setSpeed((float)(xSpeed));
     }
 
-    if (Serial1.available())
+    if (Serial2.available())
     {
-      xSpeed = Serial1.parseInt(); // get values
-      stepper1.setSpeed((float)(xSpeed));
+      ySpeed = Serial2.parseInt(); // get values
+      stepper2.setSpeed((float)(ySpeed));
     }
 
     /* Serial1.print("Received ");
