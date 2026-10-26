@@ -59,6 +59,7 @@ void loop()
 
     stepper1.setSpeed((float)(xSpeed)); // Run motors
     stepper2.setSpeed((float)(ySpeed));
+    Serial1.println("Received");
   }
   stepper1.run();
   stepper2.run();

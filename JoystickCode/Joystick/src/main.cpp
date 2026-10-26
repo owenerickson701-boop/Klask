@@ -137,6 +137,11 @@ void loop()
   Serial.print(alpha);
   Serial.print("    ");
   Serial.println(beta);
+
+  if (Serial1.available())
+  {
+    Serial.println(Serial1.readStringUntil('\n'));
+  }
 }
 
 void setReports(void)
