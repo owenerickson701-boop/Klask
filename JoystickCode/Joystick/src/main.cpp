@@ -20,6 +20,9 @@ bool otherButtonPressed = false; // dummy input
 long rateToPc = 115200;
 long rateToBoard = 9600;
 
+int k = 10;          // Tuning. Speed multiplier.
+int stepsToAvg = 10; // Cancel out the IMU being a @$#&^%# at rest
+
 Adafruit_BNO08x bno08x(BNO08X_RESET);
 sh2_SensorValue_t sensorValue;
 sh2_SensorId_t reportType = SH2_ARVR_STABILIZED_RV;
@@ -56,9 +59,6 @@ void quaternionToEulerRV(sh2_RotationVectorWAcc_t *rotational_vector, euler_t *y
   quaternionToEuler(rotational_vector->real, rotational_vector->i, rotational_vector->j, rotational_vector->k, ypr, degrees);
 }
 
-int k = 10;          // Tuning. Speed multiplier.
-int stepsToAvg = 10; // Cancel out the IMU being a @$#&^%# at rest
-
 void setReports();
 
 void setup(void)
@@ -93,7 +93,7 @@ void loop()
 {
   if (bno08x.wasReset())
   {
-    Serial.println("sensor was reset ");
+    // Serial.println("sensor was reset ");
     setReports();
   }
 
@@ -133,14 +133,18 @@ void loop()
   Serial1.println((int)(xSpeed)); // send speeds
   Serial2.println((int)(ySpeed));
 
-  Serial.print(alpha);
-  Serial.print("    ");
-  Serial.println(beta);
+  // Serial.print(alpha);
+  // Serial.print("    ");
+  // Serial.println(beta);
 
+  /*
   if (Serial1.available())
   {
     Serial.println(Serial1.readStringUntil('\n'));
-  }
+  }*/
+  Serial1.println(100); // send speeds
+  Serial2.println(100);
+  delay(1000);
 }
 
 void setReports(void)
