@@ -142,9 +142,6 @@ void loop()
   {
     Serial.println(Serial1.readStringUntil('\n'));
   }*/
-  Serial1.println(100); // send speeds
-  Serial2.println(100);
-  delay(1000);
 }
 
 void setReports(void)

@@ -34,6 +34,11 @@ void setup(void)
   pinMode(Rx2, INPUT);
   pinMode(Tx2, OUTPUT);
 
+  pinMode(pinStep, OUTPUT);
+  pinMode(pinDir, OUTPUT);
+  pinMode(pinDir2, OUTPUT);
+  pinMode(pinStep2, OUTPUT);
+
   Serial1.setPins(Rx1, Tx1);
   Serial1.begin(rateToBoard);
   Serial2.setPins(Rx2, Tx2);
@@ -45,10 +50,6 @@ void setup(void)
   stepper2.setAcceleration(10000);
   stepper2.setSpeed(1500);
   stepper2.setMaxSpeed(1500);
-  pinMode(pinStep, OUTPUT);
-  pinMode(pinDir, OUTPUT);
-  pinMode(pinDir2, OUTPUT);
-  pinMode(pinStep2, OUTPUT);
 }
 
 void loop()
@@ -73,6 +74,9 @@ void loop()
    Serial1.println(ySpeed);*/
   }
 
-  stepper1.runSpeed();
-  stepper2.runSpeed();
+  for (int i = 1; i < stepPerIter; i++)
+  {
+    stepper1.runSpeed();
+    stepper2.runSpeed();
+  }
 }
