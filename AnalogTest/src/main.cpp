@@ -13,7 +13,7 @@ long rateToBoard = 9600;
 int xSpeed;
 int ySpeed;
 
-bool mainBoard = 0; // TRUE for whichever board is connected to laptop
+bool mainBoard = 1; // TRUE for whichever board is connected to laptop
 
 void setup(void)
 {

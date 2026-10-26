@@ -23,7 +23,7 @@ bool otherButtonPressed = false; // also dummy input
 AccelStepper stepper1(1, pinStep, pinDir);
 AccelStepper stepper2(1, pinStep2, pinDir2);
 
-int stepPerIter = 1; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
+int stepPerIter = 100; // Maximum steps per poll of the BNO bc each call of run() can only go one step and reading sensors is slow
 
 long rateToBoard = 9600;
 
@@ -49,17 +49,17 @@ void setup(void)
 
 void loop()
 {
-  xSpeed = Serial1.parseInt(); // get values
-  ySpeed = Serial2.parseInt();
-
-  Serial1.println(xSpeed); // echo
-  Serial2.println(ySpeed);
-
-  stepper1.setSpeed((float)(xSpeed)); // Run motors
-  stepper2.setSpeed((float)(ySpeed));
-  for (int i = 0; i < stepPerIter; i++)
+  if (Serial1.available() || Serial2.available())
   {
-    stepper1.run();
-    stepper2.run();
+    if (Serial1.available())
+      xSpeed = (Serial1.readStringUntil('\n')).toInt(); // get values
+
+    if (Serial2.available())
+      ySpeed = (Serial2.readStringUntil('\n')).toInt(); // Serial1.parseInt());
+
+    stepper1.setSpeed((float)(xSpeed)); // Run motors
+    stepper2.setSpeed((float)(ySpeed));
   }
+  stepper1.run();
+  stepper2.run();
 }

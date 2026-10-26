@@ -22,8 +22,42 @@ long rateToBoard = 9600;
 
 Adafruit_BNO08x bno08x(BNO08X_RESET);
 sh2_SensorValue_t sensorValue;
+sh2_SensorId_t reportType = SH2_ARVR_STABILIZED_RV;
 
-int k = 1; // Tuning. Speed multiplier.
+struct euler_t
+{
+  float yaw;
+  float pitch;
+  float roll;
+} ypr;
+
+void quaternionToEuler(float qr, float qi, float qj, float qk, euler_t *ypr, bool degrees = false)
+{
+
+  float sqr = sq(qr);
+  float sqi = sq(qi);
+  float sqj = sq(qj);
+  float sqk = sq(qk);
+
+  ypr->yaw = atan2(2.0 * (qi * qj + qk * qr), (sqi - sqj - sqk + sqr));
+  ypr->pitch = asin(-2.0 * (qi * qk - qj * qr) / (sqi + sqj + sqk + sqr));
+  ypr->roll = atan2(2.0 * (qj * qk + qi * qr), (-sqi - sqj + sqk + sqr));
+
+  if (degrees)
+  {
+    ypr->yaw *= RAD_TO_DEG;
+    ypr->pitch *= RAD_TO_DEG;
+    ypr->roll *= RAD_TO_DEG;
+  }
+}
+
+void quaternionToEulerRV(sh2_RotationVectorWAcc_t *rotational_vector, euler_t *ypr, bool degrees = false)
+{
+  quaternionToEuler(rotational_vector->real, rotational_vector->i, rotational_vector->j, rotational_vector->k, ypr, degrees);
+}
+
+int k = 40;           // Tuning. Speed multiplier.
+int stepsToAvg = 500; // Cancel out the IMU being a @$#&^%# at rest
 
 void setReports();
 
@@ -68,18 +102,28 @@ void loop()
     return;
   }
 
-  int alpha = 255 * sensorValue.un.gyroscope.x;
-  int beta = 255 * sensorValue.un.gyroscope.y;
+  float alphas = 0; // sum of alphas
+  float betas = 0;  // sum of betas
+
+  for (int i = 0; i < stepsToAvg; i++)
+  {
+    quaternionToEulerRV(&sensorValue.un.arvrStabilizedRV, &ypr, true);
+    alphas += ypr.roll;
+    betas += ypr.pitch;
+  }
+
+  float alpha = alphas / stepsToAvg;
+  float beta = betas / stepsToAvg;
 
   if (buttonPressed) // Macro 1: FULL SPEED AHEAD
   {
-    xSpeed = 1000;
-    ySpeed = -1000;
+    xSpeed = 1000.0;
+    ySpeed = -1000.0;
   }
   else if (otherButtonPressed) // Brakes/Estop
   {
-    xSpeed = 0;
-    ySpeed = 0;
+    xSpeed = 0.0;
+    ySpeed = 0.0;
   }
   else
   {
@@ -87,19 +131,18 @@ void loop()
     ySpeed = (alpha - beta) * k;
   }
 
-  Serial1.println(xSpeed); // send speeds
-  Serial2.println(ySpeed);
+  Serial1.println((int)(xSpeed)); // send speeds
+  Serial2.println((int)(ySpeed));
 
-  Serial.print("Echo: ");
-
-  Serial.print(Serial1.parseInt());
-  Serial.println(Serial2.parseInt());
+  Serial.print(alpha);
+  Serial.print("    ");
+  Serial.println(beta);
 }
 
 void setReports(void)
 {
   Serial.println("Setting desired reports");
-  if (!bno08x.enableReport(SH2_GYROSCOPE_UNCALIBRATED))
+  if (!bno08x.enableReport(SH2_ARVR_STABILIZED_RV))
   {
     Serial.println("Could not enable accelerometer");
   }
