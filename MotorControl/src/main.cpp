@@ -78,5 +78,6 @@ void loop()
   {
     stepper1.runSpeed();
     stepper2.runSpeed();
+    delay(1);
   }
 }

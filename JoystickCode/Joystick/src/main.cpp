@@ -133,6 +133,10 @@ void loop()
   Serial1.println((int)(xSpeed)); // send speeds
   Serial2.println((int)(ySpeed));
 
+  Serial.print(xSpeed);
+  Serial.print("    ");
+  Serial.println(ySpeed);
+
   // Serial.print(alpha);
   // Serial.print("    ");
   // Serial.println(beta);
